@@ -191,6 +191,24 @@ a{color:inherit}
 .demo{position:relative;aspect-ratio:16/11;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:#EFEAE2;box-shadow:0 30px 60px -30px rgba(23,24,28,.45)}
 .demo iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .prod.rev .demo{min-height:420px}
+/* automation hats */
+.hats{display:grid;grid-template-columns:repeat(4,1fr);column-gap:clamp(16px,2.5vw,40px);margin-top:clamp(18px,3vh,32px)}
+.hat{border-top:1px solid var(--rule);padding:12px 0 10px;min-height:clamp(88px,12vh,118px);cursor:default}
+.hat .g{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.hat h3{font-size:clamp(18px,1.7vw,25px);transition:color .2s}
+.hat p{font-size:13.5px;color:var(--muted);margin-top:5px;max-width:30ch;line-height:1.4}
+.hat:hover h3,.hat.lit h3{color:var(--gold)}
+.hat.lit{background:linear-gradient(90deg,rgba(201,162,39,.12),transparent)}
+/* press to platform */
+.press{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.6vw,22px);margin-top:clamp(22px,3.5vh,40px);border-top:1px solid var(--rule);padding-top:20px}
+.press .n{position:relative}
+.press .n::after{content:"";position:absolute;right:-10px;top:14px;width:8px;height:8px;border-top:1px solid var(--ink);border-right:1px solid var(--ink);transform:rotate(45deg)}
+.press .n:last-child::after{display:none}
+.press .who{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.press .n.h .who{color:var(--slate)}
+.press h3{font-size:clamp(17px,1.6vw,24px);margin-bottom:6px}
+.press p{font-size:13.5px;color:var(--muted);line-height:1.4}
+.press .t{display:inline-block;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--faint)}
 /* offers */
 .offers{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,28px);margin-top:clamp(24px,4vh,44px);border-top:1px solid var(--rule);padding-top:20px}
 .offer .w{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
@@ -243,7 +261,9 @@ a{color:inherit}
   .cover .fan{position:relative;right:auto;top:auto;width:100%;max-width:none;transform:none;margin-top:28px}
   .cover.is-active .fan{animation:none}
   .cover,.s-statement,.close{align-content:start}
-  .steps,.loop,.offers,.flows,.score,.dirs3{grid-template-columns:1fr 1fr}
+  .steps,.loop,.offers,.flows,.score,.dirs3,.hats,.press{grid-template-columns:1fr 1fr}
+  .press .n::after{display:none}
+  .hat{min-height:0}
   .loop .n::after{display:none}
   .index .row{grid-template-columns:1fr;gap:2px}
   .rule3{grid-template-columns:1fr}
@@ -260,7 +280,7 @@ a{color:inherit}
   .demo{aspect-ratio:auto;height:70vh}
 }
 @media (max-width:560px){
-  .steps,.loop,.offers,.flows,.score,.dirs3{grid-template-columns:1fr}
+  .steps,.loop,.offers,.flows,.score,.dirs3,.hats,.press{grid-template-columns:1fr}
   .cms{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){
@@ -287,7 +307,7 @@ a{color:inherit}
   </div>
   <div class="mono cap">Prepared for Vyapari Mitra Publications, Pune</div>
   <h1>Seventy-six years in print. <em>The next chapter is a platform.</em></h1>
-  <p class="lede">A walkthrough of what we found, what we would build, and three ways it could look.</p>
+  <p class="lede">A walkthrough of what we found, what we would build, the automation behind it, and three ways it could look.</p>
   <div class="meta mono"><span>October 2026</span><span>Jarvis Daily, Tranquil Veda Private Limited</span></div>
 </section>
 
@@ -561,7 +581,40 @@ a{color:inherit}
   </div>
 </section>
 
-<!-- 17 Three directions intro -->
+<!-- 17 AI automation map -->
+<section class="slide s-statement" data-stage="AI automation" data-notes="You said AI automation is what you are looking for. Here is the map. Twelve jobs in your office that the system does every day, grouped by who it helps: the editorial desk, the reader, and the back office. Hover any one. The rule in every case is the same: the AI does the legwork and drafts, a person approves. Nothing goes out in Vyapari Mitra's name without a human tap.">
+  <h2>Twelve jobs the AI does <em>every day,</em> a person approves.</h2>
+  <div class="hats" data-noadvance>
+    <div class="hat"><div class="g">Editorial desk</div><h3>Digitise the issue</h3><p>Drop the print PDF; it becomes tagged articles, judgments and columns in the CMS, in Marathi.</p></div>
+    <div class="hat"><div class="g">Editorial desk</div><h3>Judgment summaries</h3><p>An English court order becomes a three-part Marathi summary: what happened, what was ruled, what it means.</p></div>
+    <div class="hat"><div class="g">Editorial desk</div><h3>Hindi and English drafts</h3><p>Every Marathi article gets translated drafts for the editor to approve, when you decide to expand.</p></div>
+    <div class="hat"><div class="g">Editorial desk</div><h3>What changed this week</h3><p>Watches CBDT and CBIC notifications and circulars, drafts the weekly update for the editor.</p></div>
+    <div class="hat"><div class="g">The reader</div><h3>Assistant on web and WhatsApp</h3><p>Answers from the archive in Marathi, cites the article, offers the subscription.</p></div>
+    <div class="hat"><div class="g">The reader</div><h3>Reader questions, triaged</h3><p>Questions for the advice column arrive sorted by topic with a drafted answer for the expert to edit.</p></div>
+    <div class="hat"><div class="g">The reader</div><h3>Due-date reminders</h3><p>GST, TDS and income tax dates sent to each subscriber by their profile: trader, professional, firm.</p></div>
+    <div class="hat"><div class="g">The reader</div><h3>Weekly newsletter</h3><p>Assembled from the week's articles, in the reader's language, sent by email and WhatsApp.</p></div>
+    <div class="hat"><div class="g">Back office</div><h3>Renewals and receipts</h3><p>Reminders, payment, GST invoice and access, with nobody in the office touching it.</p></div>
+    <div class="hat"><div class="g">Back office</div><h3>Ad bookings</h3><p>An advertiser enquiry gets the rate card, a quote and a proof deadline, automatically.</p></div>
+    <div class="hat"><div class="g">Back office</div><h3>Delivery and address changes</h3><p>Subscribers update their postal address or report a missed issue on WhatsApp; the list updates itself.</p></div>
+    <div class="hat"><div class="g">Back office</div><h3>Monday report</h3><p>Visitors, top topics, renewals due, lapsed subscribers and collections, on your phone before you ask.</p></div>
+  </div>
+</section>
+
+<!-- 18 Press to platform -->
+<section class="slide s-statement" data-stage="AI automation: one issue" data-notes="Take the one thing that happens every month: a new issue. Today it is designed for print and then rebuilt by hand for the website, page by page. With automation the print PDF goes in, and within the hour the issue is on the site, searchable, on WhatsApp and in the newsletter. Gold steps are the machine. Blue steps are your editor, and there are two of them: approve, and press publish.">
+  <h2>One issue, from the press to every subscriber, <em>in an hour.</em></h2>
+  <div class="press">
+    <div class="n h fr"><div class="who">Your team</div><h3>Drop the PDF</h3><p>The same file that goes to the printer. Nothing else to prepare.</p><span class="t">1 minute</span></div>
+    <div class="n fr"><div class="who">AI</div><h3>Split and tag</h3><p>Articles, judgments, advice, editorial. Author, category, section, page references.</p><span class="t">10 minutes</span></div>
+    <div class="n fr"><div class="who">AI</div><h3>Summaries and search</h3><p>A two-line summary per piece, keywords in Marathi and English, search index updated.</p><span class="t">5 minutes</span></div>
+    <div class="n h fr"><div class="who">Your editor</div><h3>Review and approve</h3><p>Reads the list, fixes a heading or two, decides what is free and what is members-only.</p><span class="t">30 minutes</span></div>
+    <div class="n fr"><div class="who">AI</div><h3>Publish everywhere</h3><p>Website, magazine reader, WhatsApp new-issue alert, newsletter, social captions.</p><span class="t">5 minutes</span></div>
+    <div class="n fr"><div class="who">AI</div><h3>Learn</h3><p>Which pieces were read, which drove renewals. Feeds next month's Monday report.</p><span class="t">ongoing</span></div>
+  </div>
+  <div class="loopback fr">Today this is a week of page building. Every month.</div>
+</section>
+
+<!-- 19 Three directions intro -->
 <section class="slide s-statement" data-stage="Three design directions" data-notes="Now the look. We built three deliberately different directions, each designed for a Marathi reader in Maharashtra, each with proper Devanagari type rather than a Latin font bent into Marathi. These are mood boards, not the final site. Pick the one that feels like Vyapari Mitra, and we design from there.">
   <h2>Three directions. <em>One is you.</em></h2>
   <p class="lede">Designed for a Marathi reader first. Devanagari typefaces that shape Marathi conjuncts correctly, your logo, your August cover. Each one is a different answer to "what is Vyapari Mitra online?"</p>
@@ -651,7 +704,7 @@ a{color:inherit}
   <div class="steps">
     <div class="step fr"><div class="n">1</div><h3>Choose</h3><p>You pick A, B or C, or a mix. We lock the look in one working session.</p></div>
     <div class="step fr"><div class="n">2</div><h3>Design</h3><p>Home, article, issue, account and gate, designed on your real content.</p></div>
-    <div class="step fr"><div class="n">3</div><h3>Build</h3><p>Structured content, membership, payments, WhatsApp, dashboard. Weekly walkthrough.</p></div>
+    <div class="step fr"><div class="n">3</div><h3>Build</h3><p>Structured content, membership, payments, WhatsApp, automation, dashboard. Weekly walkthrough.</p></div>
     <div class="step fr"><div class="n">4</div><h3>Move</h3><p>Every article, issue and subscriber migrated. Old links keep working.</p></div>
     <div class="step fr"><div class="n">5</div><h3>Launch</h3><p>Same domain, same morning. Your team trained the day before.</p></div>
     <div class="step fr"><div class="n">6</div><h3>Run</h3><p>Updates, backups, security, reminders and a monthly report, handled by us.</p></div>
@@ -719,6 +772,9 @@ var tx = null, ty = null;
 document.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
 document.addEventListener('touchend', function(e){ if (tx === null) return; var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4){ if (dx < 0) next(); else prev(); } tx = ty = null; }, {passive:true});
 window.__go = function(n){ go(n, 1, true); };
+(function(){ var hs = document.querySelector('.hats'); if (!hs) return; var tiles = hs.querySelectorAll('.hat'); var t = null;
+  function run(){ clearInterval(t); var k = 0; tiles.forEach(function(x){ x.classList.remove('lit'); }); if (RM) return; t = setInterval(function(){ tiles.forEach(function(x){ x.classList.remove('lit'); }); if (k < tiles.length){ tiles[k].classList.add('lit'); k++; } else clearInterval(t); }, 520); }
+  var sl = hs.closest('.slide'); new MutationObserver(function(){ if (sl.classList.contains('is-active')) run(); else clearInterval(t); }).observe(sl, {attributes:true, attributeFilter:['class']}); })();
 var h = parseInt((location.hash || '').replace('#', ''), 10);
 go(isNaN(h) ? 0 : Math.max(0, Math.min(slides.length - 1, h - 1)), 1, false);
 if (!isNaN(h)) { showFrags(cur, frags(cur).length); fragIdx = frags(cur).length; }
