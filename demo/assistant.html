@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="mr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Vyapari Mitra assistant demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EFEAE2;--panel:#F7F4EE;--ink:#1C1C1C;--muted:#6B6B6B;--line:rgba(0,0,0,.08);--wa:#075E54;--wa2:#25D366;--me:#DCF8C6;--gold:#8E6E10}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Mukta',sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);height:100%;min-height:420px}
+/* stream */
+.stream{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.stream .hd{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.stream .hd b{font-size:15px;font-weight:600}
+.stream .hd small{font-size:11.5px;color:var(--muted)}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#B3261E;font-weight:600;letter-spacing:.08em}
+.live i{width:7px;height:7px;border-radius:50%;background:#B3261E;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+.stats div{padding:10px 14px;border-right:1px solid var(--line)}
+.stats div:last-child{border-right:0}
+.stats b{display:block;font-size:22px;font-weight:600;line-height:1.1}
+.stats span{font-size:11.5px;color:var(--muted)}
+.feed{flex:1;overflow:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;animation:in .4s ease-out both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card .who{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.card .who b{color:var(--ink);font-weight:600}
+.card .q{font-weight:500}
+.card .a{color:#2f2f2f;font-size:13.5px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.card .a::before{content:"सहाय्यक: ";color:var(--wa);font-weight:600}
+.card .tag{display:inline-block;margin-top:6px;font-size:11px;padding:2px 8px;border-radius:999px;background:#FFF2D6;color:var(--gold);font-weight:600}
+.card .tag.h{background:#E8EEF9;color:#3B5BA5}
+/* chat */
+.chat{display:flex;flex-direction:column;min-height:0;background:#E5DDD5 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' opacity='.06'><circle cx='20' cy='20' r='6' fill='%23000'/><rect x='70' y='60' width='14' height='14' fill='%23000'/><path d='M30 90l10-14 10 14z' fill='%23000'/></svg>")}
+.chat .hd{background:var(--wa);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.chat .hd i{width:34px;height:34px;border-radius:50%;background:#fff url(../img/vm-logo.png) center/cover}
+.chat .hd b{display:block;font-size:15px;font-weight:600;line-height:1.2}
+.chat .hd small{font-size:11.5px;opacity:.85}
+.msgs{flex:1;overflow:auto;padding:14px 14px 6px;display:flex;flex-direction:column;gap:6px;scrollbar-width:thin}
+.m{max-width:84%;padding:8px 11px;border-radius:9px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.08);font-size:14.5px;animation:in .3s ease-out both;white-space:pre-line}
+.m.u{align-self:flex-end;background:var(--me)}
+.m small{display:block;font-size:10.5px;color:#8a8a8a;text-align:right;margin-top:3px}
+.m a{color:#0b6b5b;font-weight:600;text-decoration:underline}
+.m .btn{display:inline-block;margin-top:6px;border:1px solid #0b6b5b;color:#0b6b5b;border-radius:6px;padding:4px 10px;font-size:13px;font-weight:600}
+.typing{align-self:flex-start;background:#fff;border-radius:9px;padding:9px 12px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#999;animation:dot 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-4px);opacity:1}}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:6px 12px}
+.chips button{font:inherit;font-size:12.5px;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:999px;padding:5px 11px;cursor:pointer;color:#2f2f2f}
+.chips button:hover{background:#f3f3f3}
+.in{display:flex;gap:8px;padding:8px 10px 10px;background:#F0F0F0}
+.in input{flex:1;font:inherit;font-size:15px;padding:10px 14px;border:1px solid rgba(0,0,0,.12);border-radius:22px;background:#fff;outline:none}
+.in input:focus{border-color:var(--wa2)}
+.in button{font:inherit;width:44px;height:44px;border-radius:50%;border:0;background:var(--wa2);color:#fff;font-weight:700;cursor:pointer;font-size:18px}
+.note{font-size:10.5px;color:#777;text-align:center;padding:0 10px 6px;background:#F0F0F0}
+@media(max-width:720px){
+  .app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .stream{order:2;max-height:38%;border-right:0;border-top:1px solid var(--line)}
+  .chat{order:1}
+  .stats b{font-size:18px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="stream">
+    <div class="hd"><div><b>आज आलेले प्रश्न</b><br><small>वेबसाइट आणि WhatsApp, दोन्हीकडून</small></div><span class="live"><i></i>LIVE</span></div>
+    <div class="stats"><div><b id="sQ">0</b><span>प्रश्न आज</span></div><div><b id="sA">0</b><span>लगेच उत्तर</span></div><div><b id="sL">0</b><span>नवीन लीड्स</span></div></div>
+    <div class="feed" id="feed"></div>
+  </section>
+  <section class="chat">
+    <div class="hd"><i></i><div><b>व्यापारी मित्र सहाय्यक</b><small>ऑनलाइन · मराठीत उत्तर देतो · प्रश्न टाइप करा</small></div></div>
+    <div class="msgs" id="msgs"></div>
+    <div class="chips" id="chips"></div>
+    <div class="in"><input id="inp" placeholder="तुमचा प्रश्न इथे लिहा..." autocomplete="off"><button id="send" aria-label="पाठवा">➤</button></div>
+    <div class="note">डेमो: उत्तरे नमुना संग्रहातून. खऱ्या प्रणालीत उत्तरे व्यापारी मित्रच्या संपूर्ण संग्रहातून येतात आणि स्रोत लेख दाखवतात.</div>
+  </section>
+</div>
+<script>
+(function(){
+var KB = [
+ {k:["कंपोझिशन","composition","कम्पोझिशन"], a:"कंपोझिशन स्कीमसाठी वार्षिक उलाढाल मर्यादा:\n• वस्तू व्यापारी व उत्पादक: ₹१.५ कोटी (ईशान्येकडील व डोंगरी राज्यांत ₹७५ लाख)\n• सेवा पुरवठादार: ₹५० लाख\nकंपोझिशन व्यापाऱ्याला इनपुट टॅक्स क्रेडिट मिळत नाही आणि तो आंतरराज्य विक्री करू शकत नाही.", s:"जीएसटी लेख, ऑगस्ट २०२६", tag:"उत्तर दिले"},
+ {k:["gstr","जीएसटी रिटर्न","रिटर्नची तारीख","रिटर्न","3b","१"], a:"मासिक जीएसटी रिटर्नच्या तारखा:\n• GSTR-1: पुढील महिन्याची ११ तारीख\n• GSTR-3B: पुढील महिन्याची २० तारीख\nQRMP योजनेत असाल तर तिमाही. तुमचा नंबर नोंदवला तर मी दर महिन्याला आठवण पाठवतो.", s:"जीएसटी कॅलेंडर, ऑक्टोबर २०२६", tag:"आठवण सेट"},
+ {k:["tds","टीडीएस","टिडीएस"], a:"कापलेला TDS पुढील महिन्याच्या ७ तारखेपर्यंत भरावा लागतो (मार्चचा TDS ३० एप्रिलपर्यंत). तिमाही TDS रिटर्न (24Q/26Q) तिमाही संपल्यानंतर ३१ तारखेपर्यंत.", s:"आयकर लेख, जुलै २०२६", tag:"उत्तर दिले"},
+ {k:["ई-वे","eway","e-way","ईवे"], a:"₹५०,००० पेक्षा जास्त किमतीच्या मालाच्या वाहतुकीसाठी ई-वे बिल आवश्यक आहे. १०० कि.मी. पर्यंत १ दिवस वैधता, पुढील प्रत्येक १०० कि.मी. साठी १ दिवस अधिक.", s:"जीएसटी लेख, मे २०२६", tag:"उत्तर दिले"},
+ {k:["hsn","एचएसएन","sac","कोड"], a:"HSN कोड: मागील वर्षी उलाढाल ₹५ कोटीपर्यंत असेल तर ४ अंकी (B2B इनव्हॉइसवर), ₹५ कोटीपेक्षा जास्त असेल तर ६ अंकी. सेवांसाठी SAC कोड. वेबसाइटवरील HSN शोध साधनात वस्तू टाइप करा, कोड आणि दर मिळेल.", s:"साधने: HSN शोध", tag:"उत्तर दिले"},
+ {k:["रिफंड","refund","परतावा"], a:"जीएसटी रिफंडचा अर्ज (RFD-01) संबंधित तारखेपासून २ वर्षांच्या आत करावा लागतो. निर्यात, उलट कर रचना आणि जादा भरलेला कर या तीन प्रमुख कारणांवर रिफंड मिळतो.", s:"जीएसटी लेख, मार्च २०२६", tag:"उत्तर दिले"},
+ {k:["आयकर रिटर्न","itr","रिटर्न भर","आयकर"], a:"ऑडिट लागू नसलेल्या व्यक्ती व व्यापाऱ्यांसाठी ITR ची तारीख ३१ जुलै; ऑडिट लागू असल्यास ३१ ऑक्टोबर. नवी कर प्रणाली आता डिफॉल्ट आहे; जुनी निवडायची असल्यास रिटर्नमध्ये पर्याय निवडावा.", s:"आयकर लेख, जून २०२६", tag:"उत्तर दिले"},
+ {k:["pan","पॅन","पान"], a:"नवीन PAN साठी आयकर पोर्टलवर आधारद्वारे तात्काळ ई-PAN मोफत मिळतो (आधारशी मोबाईल लिंक असणे आवश्यक). वेबसाइटवरील 'सरकारी लिंक्स' विभागात थेट लिंक आहे.", s:"साधने: सरकारी लिंक्स", tag:"उत्तर दिले"},
+ {k:["वर्गणी संप","कधी संपते","expiry","expire","माझी वर्गणी"], a:"तुमची छापील + डिजिटल वर्गणी ३१ डिसेंबर २०२६ रोजी संपते. आजच नूतनीकरण केल्यास पुढचा अंक चुकणार नाही आणि गेल्या वर्षीचा दर कायम राहील.", s:"", btn:"एका टॅपमध्ये नूतनीकरण करा", tag:"नूतनीकरण लिंक"},
+ {k:["नूतनीकरण","renew","रिन्यू"], a:"नूतनीकरणासाठी खालील लिंकवर टॅप करा. UPI किंवा कार्डने पैसे भरा, पावती इथेच WhatsApp वर येईल आणि अंक लगेच उघडेल.", s:"", btn:"₹१,०५० ने नूतनीकरण करा", tag:"नूतनीकरण लिंक"},
+ {k:["वर्गणी","subscription","subscribe","किंमत","दर काय","price","कसे सुरू"], a:"व्यापारी मित्र वर्गणी:\n• डिजिटल: ₹७५० / वर्ष (१२ अंक ऑनलाइन)\n• छापील + डिजिटल: ₹१,०५० / वर्ष (घरपोच अंक + सर्व डिजिटल सुविधा)\nनवीन वाचकांसाठी या आठवड्यात ₹१५० सूट.", s:"", btn:"सूट घेऊन वर्गणी सुरू करा", tag:"वर्गणी ऑफर"},
+ {k:["अंक","issue","मासिक","magazine","मॅगझिन"], a:"ऑक्टोबर २०२६ चा अंक आज प्रसिद्ध झाला: जीएसटी दरांचे नवे टप्पे, आयकर स्लॅबमधील बदल, आणि दिवाळीआधीच्या सहा तारखा. वर्गणीदार असाल तर खालील लिंकवर लगेच वाचा.", s:"", btn:"अंक वाचा", tag:"अंक लिंक"},
+ {k:["लेख","article","वाच"], a:"या आठवड्यातील सर्वाधिक वाचलेले लेख:\n१. नवी कर प्रणाली की जुनी? (मोफत)\n२. रद्द केलेली नोंदणी पुन्हा सुरू करता येते का? (वर्गणीदार)\n३. पत्रक दाखल करताना चूक झाली? दुरुस्तीचे तीन मार्ग (मोफत)", s:"", btn:"लेख उघडा", tag:"उत्तर दिले"},
+ {k:["नमस्कार","hello","hi","हाय","नमस्ते","हॅलो"], a:"नमस्कार! मी व्यापारी मित्रचा सहाय्यक. आयकर, जीएसटी, TDS, ई-वे बिल किंवा तुमच्या वर्गणीबद्दल काहीही विचारा.", s:"", tag:"स्वागत"},
+ {k:["धन्यवाद","thanks","thank","आभार"], a:"आपले स्वागत आहे! आणखी काही विचारायचे असेल तर मी इथेच आहे.", s:"", tag:"बंद"},
+ {k:["मराठी","हिंदी","english","इंग्रजी","भाषा"], a:"सध्या मी मराठीत उत्तर देतो. हिंदी आणि English आवृत्त्या लवकरच येत आहेत; तयार झाल्यावर इथेच कळवतो.", s:"", tag:"उत्तर दिले"}
+];
+var FALLBACK = {a:"हा प्रश्न माझ्या संग्रहात थेट सापडला नाही. मी तो व्यापारी मित्रच्या तज्ज्ञ पॅनेलकडे पाठवला आहे; उत्तर या चॅटवरच येईल, साधारण एका कामकाजाच्या दिवसात. दरम्यान संबंधित लेख:", btn:"कायद्याचा सल्ला विभाग", tag:"तज्ज्ञांकडे", h:true};
+function match(q){
+  var t = q.toLowerCase();
+  for (var i = 0; i < KB.length; i++){ for (var j = 0; j < KB[i].k.length; j++){ if (t.indexOf(KB[i].k[j].toLowerCase()) >= 0) return KB[i]; } }
+  return FALLBACK;
+}
+function now(){ var d = new Date(); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
+var msgs = document.getElementById('msgs'), inp = document.getElementById('inp'), feed = document.getElementById('feed');
+var cQ = 0, cA = 0, cL = 0;
+function stat(){ document.getElementById('sQ').textContent = cQ; document.getElementById('sA').textContent = cA; document.getElementById('sL').textContent = cL; }
+function bubble(text, me, r){
+  var d = document.createElement('div'); d.className = 'm' + (me ? ' u' : '');
+  d.textContent = text;
+  if (r && r.s){ d.appendChild(document.createTextNode('\n')); var a = document.createElement('a'); a.textContent = 'स्रोत: ' + r.s; d.appendChild(a); }
+  if (r && r.btn){ d.appendChild(document.createElement('br')); var b = document.createElement('span'); b.className = 'btn'; b.textContent = r.btn; d.appendChild(b); }
+  var s = document.createElement('small'); s.textContent = now() + (me ? ' ✓✓' : ''); d.appendChild(s);
+  msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
+}
+var busy = false;
+function ask(q){
+  q = (q || '').trim(); if (!q || busy) return; busy = true;
+  bubble(q, true); inp.value = '';
+  var t = document.createElement('div'); t.className = 'typing'; t.innerHTML = '<i></i><i></i><i></i>'; msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight;
+  var r = match(q);
+  setTimeout(function(){ t.remove(); bubble(r.a, false, r); cQ++; if (!r.h) cA++; if (r.tag === 'वर्गणी ऑफर' || r.tag === 'नूतनीकरण लिंक') cL++; stat(); busy = false; inp.focus(); }, 700 + Math.min(1400, r.a.length * 6));
+}
+document.getElementById('send').addEventListener('click', function(){ ask(inp.value); });
+inp.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); ask(inp.value); } e.stopPropagation(); });
+var CH = ['कंपोझिशन स्कीमची मर्यादा किती?','GSTR-3B ची तारीख?','माझी वर्गणी कधी संपते?','ई-वे बिल कधी लागते?','वर्गणीचे दर काय?','TDS कधी भरायचा?'];
+var chips = document.getElementById('chips');
+CH.forEach(function(c){ var b = document.createElement('button'); b.textContent = c; b.addEventListener('click', function(){ ask(c); }); chips.appendChild(b); });
+bubble('नमस्कार! मी व्यापारी मित्रचा सहाय्यक. आयकर, जीएसटी किंवा तुमच्या वर्गणीबद्दल विचारा.', false);
+
+/* simulated readers arriving */
+var PEOPLE = [['सुनील पाटील','कोल्हापूर'],['प्रिया कुलकर्णी','पुणे'],['रमेश शेट्टी','बेळगाव'],['CA अमोल देशपांडे','नाशिक'],['संगीता जोशी','सांगली'],['नितीन मोहिते','सातारा'],['अ‍ॅड. राहुल जाधव','औरंगाबाद'],['मीना नाईक','पणजी'],['विनायक सानस','पुणे'],['शुभम गायकवाड','सोलापूर'],['दीपाली गरगटे','कोल्हापूर'],['संजय भोसले','ठाणे']];
+var QS = ['कंपोझिशन स्कीमची मर्यादा किती?','GSTR-1 कधी भरायचा?','TDS भरण्याची तारीख?','ई-वे बिल ५०,००० च्या खाली लागते का?','HSN कोड ४ अंकी की ६?','रिफंड किती दिवसांत मिळतो?','माझी वर्गणी कधी संपते?','वर्गणीचे दर काय आहेत?','ऑक्टोबरचा अंक आला का?','आयकर रिटर्नची शेवटची तारीख?','PAN कसा काढायचा?','नवी कर प्रणाली निवडावी का?','नोंदणी रद्द झाली, अपील कसे?'];
+var pi = 0;
+function arrive(){
+  var p = PEOPLE[pi % PEOPLE.length], q = QS[Math.floor(Math.random() * QS.length)]; pi++;
+  var r = match(q);
+  var c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = '<div class="who"><b></b><span></span></div><div class="q"></div>';
+  c.querySelector('b').textContent = p[0] + ', ' + p[1]; c.querySelector('span').textContent = now(); c.querySelector('.q').textContent = q;
+  feed.insertBefore(c, feed.firstChild);
+  cQ++; stat();
+  setTimeout(function(){ var a = document.createElement('div'); a.className = 'a'; a.textContent = r.a.split('\n')[0]; c.appendChild(a); var t = document.createElement('span'); t.className = 'tag' + (r.h ? ' h' : ''); t.textContent = r.tag; c.appendChild(t); if (!r.h) cA++; if (r.tag === 'वर्गणी ऑफर' || r.tag === 'नूतनीकरण लिंक') cL++; stat(); }, 900 + Math.random() * 900);
+  while (feed.children.length > 14) feed.removeChild(feed.lastChild);
+  setTimeout(arrive, 3200 + Math.random() * 2800);
+}
+setTimeout(arrive, 800);
+})();
+</script>
+</body>
+</html>

@@ -188,6 +188,9 @@ a{color:inherit}
 .bub small{display:block;font-size:11px;color:var(--faint);margin-top:4px;text-align:right}
 .bub a{color:var(--green);font-weight:600;text-decoration:none}
 
+.demo{position:relative;aspect-ratio:16/11;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:#EFEAE2;box-shadow:0 30px 60px -30px rgba(23,24,28,.45)}
+.demo iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.prod.rev .demo{min-height:420px}
 /* offers */
 .offers{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,28px);margin-top:clamp(24px,4vh,44px);border-top:1px solid var(--rule);padding-top:20px}
 .offer .w{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
@@ -254,6 +257,7 @@ a{color:inherit}
   .stack .shot{position:relative;width:100%}
   .stack .shot.b{margin-top:12px}
   .dash{grid-template-columns:1fr 1fr}
+  .demo{aspect-ratio:auto;height:70vh}
 }
 @media (max-width:560px){
   .steps,.loop,.offers,.flows,.score,.dirs3{grid-template-columns:1fr}
@@ -460,10 +464,11 @@ a{color:inherit}
 </section>
 
 <!-- 12 Chatbot -->
-<section class="slide" data-stage="The assistant" data-notes="The same assistant lives on the website and on WhatsApp. It is trained on seventy-six years of your own archive, answers in Marathi, cites the article, and nudges towards the subscription when the answer sits behind the paywall. It never invents tax advice; when it is unsure it offers the 'ask the expert' column.">
-  <div class="prod">
+<section class="slide" data-stage="The assistant, live" data-notes="This one is interactive. Type any question in the box on the right, in Marathi or English: composition limit, GSTR dates, TDS, e-way bill, HSN, refund, 'when does my subscription end', 'renew'. The left panel shows readers arriving from the website and WhatsApp and getting answered in real time. In the meeting the answers come from a sample archive; the real one reads every issue since 1950 and cites the article.">
+  <div class="prod rev">
+    <div class="demo" data-noadvance><iframe src="demo/assistant.html" title="Assistant demo" loading="lazy"></iframe></div>
     <div class="copy">
-      <div class="mono cap">Website and WhatsApp assistant</div>
+      <div class="mono cap">Website and WhatsApp assistant. Try it: type a question</div>
       <h2>Answers in Marathi, from your own archive.</h2>
       <ul class="lines">
         <li class="fr"><b>Trained only on Vyapari Mitra content</b><span>Articles, judgments, advice columns. It cites the source every time.</span></li>
@@ -471,13 +476,6 @@ a{color:inherit}
         <li class="fr"><b>Sells politely</b><span>If the full answer is members-only, it says so and offers the plan.</span></li>
         <li class="fr"><b>Hands over when it should</b><span>Legal questions beyond the archive go to your team with the chat attached.</span></li>
       </ul>
-    </div>
-    <div class="chat">
-      <div class="hd"><i></i><div><b>व्यापारी मित्र सहाय्यक</b><small>online · replies in Marathi</small></div></div>
-      <div class="bub u">कंपोझिशन स्कीमची मर्यादा किती आहे?<small>10:42</small></div>
-      <div class="bub">वस्तू व्यापाऱ्यांसाठी वार्षिक उलाढाल मर्यादा ₹1.5 कोटी आहे (ईशान्येकडील राज्यांत ₹75 लाख). सेवांसाठी ₹50 लाख. सविस्तर: <a>जीएसटी लेख, ऑगस्ट २०२६</a><small>10:42</small></div>
-      <div class="bub u">माझी वर्गणी कधी संपते?<small>10:43</small></div>
-      <div class="bub">तुमची छापील + डिजिटल वर्गणी ३१ डिसेंबर २०२६ रोजी संपते. आजच नूतनीकरण केल्यास पुढचा अंक चुकणार नाही. <a>एका टॅपमध्ये नूतनीकरण</a><small>10:43</small></div>
     </div>
   </div>
 </section>
@@ -566,7 +564,7 @@ a{color:inherit}
 <!-- 17 Three directions intro -->
 <section class="slide s-statement" data-stage="Three design directions" data-notes="Now the look. We built three deliberately different directions, each designed for a Marathi reader in Maharashtra, each with proper Devanagari type rather than a Latin font bent into Marathi. These are mood boards, not the final site. Pick the one that feels like Vyapari Mitra, and we design from there.">
   <h2>Three directions. <em>One is you.</em></h2>
-  <p class="lede">Designed for a Marathi reader first. Real Devanagari typefaces, your logo, your August cover. Each one is a different answer to "what is Vyapari Mitra online?"</p>
+  <p class="lede">Designed for a Marathi reader first. Devanagari typefaces that shape Marathi conjuncts correctly, your logo, your August cover. Each one is a different answer to "what is Vyapari Mitra online?"</p>
   <div class="dirs3">
     <div class="fr"><figure class="shot"><img src="img/mood-a-desk.jpg" alt=""></figure><h3>A. Vartapatra</h3><p>The heritage broadsheet. Trust, authority, seventy-six years.</p></div>
     <div class="fr"><figure class="shot"><img src="img/mood-b-desk.jpg" alt=""></figure><h3>B. Saathi</h3><p>The daily companion. Tools, dates, answers, a friend in your pocket.</p></div>
@@ -603,7 +601,7 @@ a{color:inherit}
       <h2>Saathi. <em>The friend who knows the tax rules.</em></h2>
       <p class="lede">Everyday utility. Search first, due dates, calculators and the assistant up front. The magazine is the reward for coming back.</p>
       <div class="sw"><i style="background:#FFFBF4"></i><i style="background:#F2691D"></i><i style="background:#14213D"></i><i style="background:#1E8E5A"></i></div>
-      <div class="type"><b>Baloo 2</b> for headlines, <b>Mukta</b> for reading</div>
+      <div class="type"><b>Mukta ExtraBold</b> for headlines, <b>Mukta</b> for reading</div>
       <ul class="lines">
         <li class="fr"><b>For whom</b><span>Shopkeepers, traders and first-time taxpayers, mostly on a phone.</span></li>
         <li class="fr"><b>What it says</b><span>Ask anything about tax, in Marathi, right now.</span></li>
@@ -624,7 +622,7 @@ a{color:inherit}
       <h2>Nyaya. <em>The reference library for professionals.</em></h2>
       <p class="lede">Precision and prestige. Judgments search with facets, the 1950 to 2026 archive as a timeline, and a membership card that reads like a credential.</p>
       <div class="sw"><i style="background:#0F1F1A"></i><i style="background:#D4A72C"></i><i style="background:#EFE6D2"></i><i style="background:#1B372E"></i></div>
-      <div class="type"><b>Rozha One</b> for headlines, <b>Martel</b> for reading</div>
+      <div class="type"><b>Rozha One</b> for headlines, <b>Noto Serif Devanagari</b> for reading</div>
       <ul class="lines">
         <li class="fr"><b>For whom</b><span>Chartered accountants, advocates, tax consultants and their firms.</span></li>
         <li class="fr"><b>What it says</b><span>The most complete Marathi tax reference there is.</span></li>
