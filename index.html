@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="description" content="Vyapari Mitra: from a website to a subscriber platform. A proposal walkthrough by Jarvis Daily.">
+<title>Vyapari Mitra proposal walkthrough</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Mukta:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4EFE6; --paper2:#EBE4D6; --paper3:#E2DACA;
+  --ink:#17181C; --ink2:#2F3139; --muted:#5E616B; --faint:#8F929B;
+  --rule:rgba(23,24,28,.16); --rule2:rgba(23,24,28,.08);
+  --gold:#8E6E10; --gold2:#C9A227; --slate:#5B6A96; --red:#A3362C; --green:#3D7A52;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --gx:clamp(22px,5.5vw,96px); --gy:clamp(20px,5vh,56px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:17px;line-height:1.5;overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.06;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>")}
+.serif,h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:400;letter-spacing:-.015em;line-height:1.05;font-variation-settings:"opsz" 144}
+h1{font-size:clamp(44px,6.8vw,104px);max-width:13ch;text-wrap:balance}
+h2{font-size:clamp(32px,4.6vw,70px);max-width:15ch;text-wrap:balance}
+h3{font-size:clamp(21px,2vw,29px);letter-spacing:-.01em}
+em{font-style:italic;font-weight:300;color:var(--gold)}
+.mr{font-family:'Mukta',sans-serif}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:clamp(17px,1.35vw,21px);color:var(--ink2);max-width:48ch;line-height:1.5;text-wrap:pretty}
+.muted{color:var(--muted)}
+a{color:inherit}
+
+.chrome{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:20px var(--gx);pointer-events:none}
+.wordmark{font-family:'Fraunces',serif;font-size:19px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.wordmark i{width:8px;height:8px;border-radius:50%;background:var(--gold2);display:inline-block}
+.progress{position:fixed;left:var(--gx);right:var(--gx);bottom:22px;height:1px;background:var(--rule);z-index:20}
+.progress i{display:block;height:100%;width:0;background:var(--ink);transition:width .5s var(--ease)}
+.counter{position:fixed;right:var(--gx);bottom:32px;z-index:20;font-variant-numeric:tabular-nums}
+.hint{position:fixed;left:var(--gx);bottom:32px;z-index:20;transition:opacity .4s}
+.hint kbd{font:inherit;border:1px solid var(--rule);border-radius:4px;padding:1px 6px;color:var(--ink2);margin:0 2px}
+.notes{position:fixed;left:50%;bottom:52px;transform:translateX(-50%);width:min(900px,calc(100% - 2*var(--gx)));background:var(--ink);color:var(--paper);border-radius:6px;padding:16px 20px;z-index:30;font-size:15px;line-height:1.5;box-shadow:0 24px 60px rgba(23,24,28,.3)}
+.notes b{color:var(--gold2);font-weight:500;margin-right:6px}
+
+#deck{position:fixed;inset:0}
+.slide{position:absolute;inset:0;padding:calc(var(--gy) + 52px) var(--gx) calc(var(--gy) + 36px);display:grid;align-content:center;opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .6s var(--ease),transform .6s var(--ease),visibility 0s linear .6s}
+.slide.is-active{opacity:1;visibility:visible;transform:none;transition:opacity .6s var(--ease),transform .6s var(--ease),visibility 0s}
+.slide.back{transform:translateY(-14px)}
+.fr{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.fr.on{opacity:1;transform:none}
+.cap{margin-bottom:clamp(14px,2.2vh,24px)}
+.s-statement{align-content:end}
+.s-statement .lede{margin-top:clamp(16px,2.4vh,28px)}
+
+.cover{align-content:end;padding-bottom:calc(var(--gy) + 48px)}
+.cover .fan{position:absolute;right:calc(var(--gx) * .6);top:50%;width:46vw;max-width:760px;aspect-ratio:16/11;transform:translateY(-54%);pointer-events:none}
+.cover .fan .shot{position:absolute;width:74%;aspect-ratio:16/10;transform-origin:50% 100%}
+.cover .fan .shot.a{left:0;top:9%;transform:rotate(-7deg)}
+.cover .fan .shot.b{left:14%;top:0;transform:rotate(1deg);z-index:2}
+.cover .fan .shot.c{left:28%;top:12%;transform:rotate(8deg)}
+.cover .meta{display:flex;gap:28px;margin-top:clamp(20px,3vh,34px)}
+.cover h1,.cover .lede,.cover .cap{position:relative;z-index:3}
+
+.shot{position:relative;margin:0;background:var(--paper2);border:1px solid var(--rule);border-radius:5px;overflow:hidden;box-shadow:0 1px 0 rgba(23,24,28,.05),0 28px 56px -26px rgba(23,24,28,.45);aspect-ratio:16/10}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.shot.ph{aspect-ratio:390/844;border-radius:22px;border:6px solid var(--ink);box-shadow:0 30px 60px -28px rgba(23,24,28,.6)}
+.shot.ph img{object-position:top center}
+.shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;background:linear-gradient(0deg,rgba(23,24,28,.6),rgba(23,24,28,0));color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+.is-active .shot{animation:rise .8s var(--ease) both}
+.is-active .stack .shot.b,.is-active .phones .shot:nth-child(2){animation-delay:.12s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.cover.is-active .fan .shot{animation:none}
+.cover.is-active .fan{animation:fanin 1s var(--ease) both}
+@keyframes fanin{from{opacity:0;transform:translateY(-50%)}to{opacity:1;transform:translateY(-54%)}}
+
+.prod{display:grid;grid-template-columns:minmax(0,4.2fr) minmax(0,7.8fr);gap:clamp(28px,4.5vw,80px);align-items:center}
+.prod.rev{grid-template-columns:minmax(0,7.8fr) minmax(0,4.2fr)}
+.prod .copy h2{font-size:clamp(28px,2.9vw,44px);max-width:17ch;margin-bottom:clamp(14px,2vh,22px)}
+.lines{list-style:none;margin-top:6px;border-top:1px solid var(--rule)}
+.lines li{padding:11px 0;border-bottom:1px solid var(--rule2);font-size:clamp(15px,1.12vw,17px);color:var(--ink2);line-height:1.4}
+.lines li b{font-weight:500;color:var(--ink)}
+.lines li span{display:block;color:var(--muted);font-size:.92em;margin-top:2px}
+.lines li.bad b{color:var(--red)}
+.stack{position:relative;aspect-ratio:16/11.4}
+.stack .shot{position:absolute;width:76%}
+.stack .shot.a{left:0;top:0}
+.stack .shot.b{right:0;bottom:0;z-index:2}
+.phones{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.5vw,40px);max-height:66vh;justify-items:center}
+.phones .shot{height:66vh;width:auto;aspect-ratio:390/844}
+.phones .shot img{height:100%;width:100%}
+
+.three{margin-top:clamp(20px,3vh,36px);border-top:1px solid var(--rule)}
+.three .b{display:grid;grid-template-columns:clamp(60px,7vw,110px) minmax(0,1fr);gap:16px;align-items:baseline;padding:clamp(12px,2vh,22px) 0;border-bottom:1px solid var(--rule2)}
+.three .n{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:clamp(32px,3.8vw,56px);color:var(--gold);line-height:1}
+.three h3{font-size:clamp(22px,2.4vw,34px);margin-bottom:4px}
+.three p{color:var(--ink2);max-width:60ch;font-size:clamp(15px,1.12vw,17px)}
+
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(14px,2vw,28px);margin-top:clamp(24px,4vh,48px);border-top:1px solid var(--rule);padding-top:20px}
+.step .n{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:clamp(28px,3vw,44px);color:var(--gold);line-height:1;margin-bottom:12px}
+.step h3{font-size:clamp(18px,1.6vw,24px);margin-bottom:6px}
+.step p{font-size:14.5px;color:var(--muted);line-height:1.45}
+
+.loop{display:grid;grid-template-columns:repeat(7,1fr);gap:clamp(10px,1.6vw,24px);margin-top:clamp(24px,4vh,48px);border-top:1px solid var(--rule);padding-top:20px}
+.loop .n{position:relative}
+.loop .n::after{content:"";position:absolute;right:-12px;top:12px;width:8px;height:8px;border-top:1px solid var(--ink);border-right:1px solid var(--ink);transform:rotate(45deg)}
+.loop .n:last-child::after{display:none}
+.loop h3{font-size:clamp(18px,1.8vw,27px);margin-bottom:6px}
+.loop p{font-size:14px;color:var(--muted)}
+.loopback{margin-top:22px;font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:clamp(18px,1.6vw,24px);color:var(--gold)}
+
+.index{margin-top:clamp(12px,2vh,24px);border-top:1px solid var(--rule)}
+.index .row{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;padding:clamp(6px,1vh,11px) 0;border-bottom:1px solid var(--rule2);align-items:baseline}
+.index .who{font-family:'Fraunces',serif;font-size:clamp(17px,1.6vw,23px);letter-spacing:-.01em}
+.index .what{color:var(--ink2);font-size:clamp(14.5px,1.1vw,17px)}
+.index .what i{font-style:normal;color:var(--faint);font-size:12px;margin-left:10px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;text-transform:uppercase}
+
+/* scorecard */
+.score{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(24px,4vw,64px);margin-top:clamp(16px,2.5vh,28px);border-top:1px solid var(--rule)}
+.score .r{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule2);font-size:clamp(14px,1.05vw,16.5px)}
+.score .r .bar{width:clamp(90px,10vw,160px);height:5px;background:var(--paper3);border-radius:3px;overflow:hidden}
+.score .r .bar i{display:block;height:100%;background:var(--gold2)}
+.score .r.crit .bar i{background:var(--red)}
+.score .r .v{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);width:5ch;text-align:right}
+.score .r.crit .v{color:var(--red)}
+
+/* flows */
+.flows{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,48px);margin-top:clamp(20px,3vh,36px)}
+.flow{border-top:1px solid var(--rule);padding-top:16px}
+.flow .k{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.flow .k.good{color:var(--green)}
+.chain{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.chain span{border:1px solid var(--rule);border-radius:4px;padding:8px 12px;font-size:15px;background:rgba(255,255,255,.35)}
+.chain i{font-style:normal;color:var(--faint)}
+.chain span.x{border-style:dashed;color:var(--red)}
+.chain span.g{border-color:var(--green);color:var(--green)}
+.flow p{margin-top:12px;color:var(--ink2);font-size:15.5px;max-width:40ch}
+
+/* dashboard mock */
+.mock{background:#fff;border:1px solid var(--rule);border-radius:8px;box-shadow:0 30px 60px -30px rgba(23,24,28,.45);overflow:hidden}
+.mock .bar{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--rule2)}
+.mock .bar i{width:9px;height:9px;border-radius:50%;background:var(--paper3)}
+.dash{padding:18px 20px 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{border:1px solid var(--rule2);border-radius:6px;padding:12px 14px}
+.tile .k{font-size:12px;color:var(--muted)}
+.tile b{display:block;font-family:'Fraunces',serif;font-weight:400;font-size:clamp(22px,2.2vw,32px);line-height:1.1;margin:4px 0 2px}
+.tile small{font-size:12px;color:var(--green)}
+.tile .sp{display:flex;align-items:flex-end;gap:3px;height:34px;margin-top:8px}
+.tile .sp i{flex:1;background:var(--gold2);border-radius:2px 2px 0 0;opacity:.85}
+.topics{grid-column:1/-1;border:1px solid var(--rule2);border-radius:6px;padding:12px 14px}
+.topics .k{font-size:12px;color:var(--muted);margin-bottom:8px}
+.topics .t{display:grid;grid-template-columns:120px 1fr auto;gap:12px;align-items:center;font-size:13.5px;padding:4px 0}
+.topics .t .b{height:7px;background:var(--paper3);border-radius:4px;overflow:hidden}
+.topics .t .b i{display:block;height:100%;background:var(--slate)}
+.topics .t em{font-style:normal;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px}
+.gate{padding:20px 22px}
+.gate .k{font-family:'Mukta',sans-serif;font-size:20px;font-weight:600;margin-bottom:4px}
+.gate p{font-family:'Mukta',sans-serif;font-size:14px;color:var(--muted);margin-bottom:12px}
+.gate .f{border:1px solid var(--rule);border-radius:5px;padding:10px 12px;font-family:'Mukta',sans-serif;font-size:14px;color:var(--faint);margin-bottom:8px}
+.gate .go{background:var(--ink);color:#fff;border-radius:5px;padding:11px;text-align:center;font-family:'Mukta',sans-serif;font-weight:600;font-size:15px;margin-top:4px}
+.gate .or{font-size:12px;color:var(--faint);text-align:center;margin:10px 0}
+.gate .soc{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gate .soc span{border:1px solid var(--rule);border-radius:5px;padding:9px;font-size:13px;text-align:center;font-weight:500}
+.gate label{display:flex;gap:8px;align-items:center;font-family:'Mukta',sans-serif;font-size:13px;color:var(--ink2);margin-top:12px}
+.gate label i{width:14px;height:14px;border:1px solid var(--ink);border-radius:3px;display:inline-block;background:var(--gold2)}
+
+/* thread */
+.thread{border-top:1px solid var(--rule);padding-top:6px;margin-top:clamp(14px,2vh,24px)}
+.msg{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:14px;align-items:start;padding:10px 0;border-bottom:1px solid var(--rule2)}
+.msg i{width:10px;height:10px;border-radius:50%;background:var(--gold2);margin-top:7px}
+.msg.h i{background:var(--slate)}
+.msg b{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:3px}
+.msg.h b{color:var(--slate)}
+.msg p{font-size:clamp(15px,1.12vw,17px);color:var(--ink);line-height:1.4;max-width:56ch}
+.msg span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);margin-top:4px;white-space:nowrap}
+
+/* chat */
+.chat{background:#E9E2D4;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;max-width:420px;justify-self:center;width:100%;box-shadow:0 30px 60px -30px rgba(23,24,28,.45)}
+.chat .hd{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid rgba(23,24,28,.1);margin-bottom:4px}
+.chat .hd i{width:30px;height:30px;border-radius:50%;background:var(--green)}
+.chat .hd b{font-size:14px;display:block}
+.chat .hd small{font-size:11px;color:var(--muted)}
+.bub{font-family:'Mukta',sans-serif;font-size:14.5px;line-height:1.4;padding:9px 12px;border-radius:10px;max-width:86%;background:#fff}
+.bub.u{align-self:flex-end;background:#D7F0C8}
+.bub small{display:block;font-size:11px;color:var(--faint);margin-top:4px;text-align:right}
+.bub a{color:var(--green);font-weight:600;text-decoration:none}
+
+/* offers */
+.offers{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,28px);margin-top:clamp(24px,4vh,44px);border-top:1px solid var(--rule);padding-top:20px}
+.offer .w{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.offer h3{font-size:clamp(19px,1.8vw,26px);margin-bottom:6px}
+.offer p{font-size:14.5px;color:var(--ink2)}
+
+/* magazine rule */
+.rule3{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:clamp(24px,4vh,44px);border-top:1px solid var(--rule)}
+.rule3 div{padding:18px 18px 18px 0;border-right:1px solid var(--rule2)}
+.rule3 div:last-child{border-right:0;padding-left:18px}
+.rule3 div:nth-child(2){padding-left:18px}
+.rule3 .k{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.rule3 h3{font-size:clamp(20px,2vw,30px);margin:8px 0 6px}
+.rule3 p{color:var(--ink2);font-size:15.5px;max-width:30ch}
+
+/* cms mock */
+.cms{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;font-family:'Mukta',sans-serif}
+.cms .f{border:1px solid var(--rule);border-radius:5px;padding:9px 11px;font-size:13.5px;color:var(--ink2);background:#fff}
+.cms .f small{display:block;font-size:11px;color:var(--faint);margin-bottom:2px;font-family:'Instrument Sans',sans-serif}
+.cms .f.w{grid-column:1/-1}
+.cms .f.area{min-height:70px}
+.cms .pub{grid-column:1/-1;background:var(--green);color:#fff;border-radius:5px;padding:10px;text-align:center;font-weight:600}
+
+/* directions */
+.dir{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,8.4fr);gap:clamp(24px,4vw,70px);align-items:center}
+.dir .copy h2{font-size:clamp(28px,3vw,46px);margin-bottom:10px}
+.dir .copy .lede{font-size:clamp(15px,1.2vw,18px);margin-bottom:14px}
+.sw{display:flex;gap:6px;margin:12px 0 10px}
+.sw i{width:30px;height:30px;border-radius:50%;border:1px solid rgba(23,24,28,.18)}
+.type{font-size:14px;color:var(--muted)}
+.type b{font-weight:500;color:var(--ink)}
+.combo{position:relative;aspect-ratio:16/10.4}
+.combo .shot.d{position:absolute;left:0;top:0;width:84%}
+.combo .shot.ph{position:absolute;right:0;bottom:0;width:21%;z-index:2}
+.combo .shot.ph img{object-position:top center}
+.dirs3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.5vw,36px);margin-top:clamp(22px,3.5vh,40px)}
+.dirs3 .shot{aspect-ratio:16/10}
+.dirs3 h3{margin-top:12px;font-size:clamp(20px,1.9vw,27px)}
+.dirs3 p{font-size:14.5px;color:var(--ink2);margin-top:4px}
+
+.close{align-content:end}
+.close .contact{display:grid;grid-template-columns:repeat(3,auto);gap:40px;margin-top:clamp(24px,4vh,44px);justify-content:start;border-top:1px solid var(--rule);padding-top:18px}
+.close .contact span{display:block;margin-bottom:4px}
+.close .contact div{font-size:17px}
+
+@media (max-width:980px){
+  body{font-size:15px}
+  .slide{padding:calc(var(--gy) + 56px) var(--gx) calc(var(--gy) + 48px);overflow-y:auto;align-content:start}
+  .prod,.prod.rev,.dir{grid-template-columns:1fr}
+  .cover .fan{position:relative;right:auto;top:auto;width:100%;max-width:none;transform:none;margin-top:28px}
+  .cover.is-active .fan{animation:none}
+  .cover,.s-statement,.close{align-content:start}
+  .steps,.loop,.offers,.flows,.score,.dirs3{grid-template-columns:1fr 1fr}
+  .loop .n::after{display:none}
+  .index .row{grid-template-columns:1fr;gap:2px}
+  .rule3{grid-template-columns:1fr}
+  .rule3 div{border-right:0;padding-left:0!important;border-bottom:1px solid var(--rule2)}
+  .close .contact{grid-template-columns:1fr;gap:12px}
+  .hint,.stage{display:none}
+  .counter{right:16px}
+  .phones .shot{height:auto;width:100%}
+  .phones{max-height:none}
+  .stack{aspect-ratio:auto}
+  .stack .shot{position:relative;width:100%}
+  .stack .shot.b{margin-top:12px}
+  .dash{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  .steps,.loop,.offers,.flows,.score,.dirs3{grid-template-columns:1fr}
+  .cms{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  .slide,.fr,.progress i{transition:none!important}
+  .is-active .shot,.cover.is-active .fan{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="wordmark"><i></i>Jarvis Daily</div>
+  <div class="stage mono" id="stage"></div>
+</div>
+
+<main id="deck">
+
+<!-- 1 Cover -->
+<section class="slide cover" data-stage="" data-notes="Thank you for the time. In twenty minutes: what we found on the site today, what the next version should do for subscribers, three design directions, and how we would work. No prices in this walkthrough; that comes after you pick a direction.">
+  <div class="fan" aria-hidden="true">
+    <figure class="shot a"><img src="img/mood-a-desk.jpg" alt=""></figure>
+    <figure class="shot b"><img src="img/mood-b-desk.jpg" alt=""></figure>
+    <figure class="shot c"><img src="img/mood-c-desk.jpg" alt=""></figure>
+  </div>
+  <div class="mono cap">Prepared for Vyapari Mitra Publications, Pune</div>
+  <h1>Seventy-six years in print. <em>The next chapter is a platform.</em></h1>
+  <p class="lede">A walkthrough of what we found, what we would build, and three ways it could look.</p>
+  <div class="meta mono"><span>October 2026</span><span>Jarvis Daily, Tranquil Veda Private Limited</span></div>
+</section>
+
+<!-- 2 What we heard -->
+<section class="slide s-statement" data-stage="What we heard" data-notes="These four lines are from your own notes on the audit. Everything in this deck is built around them. Nothing here is a redesign for its own sake.">
+  <h2>What you asked for, <em>in your own words.</em></h2>
+  <div class="three">
+    <div class="b fr"><div class="n">1</div><div><h3>Know who is visiting</h3><p>Ask for name, mobile and email before a visitor reads. Say thank you, let them in.</p></div></div>
+    <div class="b fr"><div class="n">2</div><div><h3>Count them</h3><p>How many people came today, how many since launch, and the collection total month by month.</p></div></div>
+    <div class="b fr"><div class="n">3</div><div><h3>See what they read</h3><p>Which topic or page a visitor spends the most time on.</p></div></div>
+    <div class="b fr"><div class="n">4</div><div><h3>Run it yourself</h3><p>Upload articles and issues without calling a developer.</p></div></div>
+  </div>
+</section>
+
+<!-- 3 The site today -->
+<section class="slide" data-stage="The site today" data-notes="A quick look at where things stand. The content is strong; the container is the problem. These numbers are from our own crawl of the live site this week.">
+  <div class="prod">
+    <div class="copy">
+      <div class="mono cap">vyaparimitra.com, today</div>
+      <h2>A strong magazine inside a tired website.</h2>
+      <ul class="lines">
+        <li class="fr"><b>Since 1950, 25,000+ subscribers</b><span>Maharashtra, Goa, parts of Karnataka. The content is the asset.</span></li>
+        <li class="fr"><b>WordPress with a page builder and a shop plugin</b><span>Every article is a hand-built page. Four add-on plugins just for layout.</span></li>
+        <li class="fr"><b>Thirty menu entries, listed twice</b><span>The same navigation is rendered two times on every page.</span></li>
+        <li class="fr"><b>Fourteen "Read more" links on the home page</b><span>None of them say what the reader will get.</span></li>
+      </ul>
+    </div>
+    <figure class="shot"><img src="img/cur-desk-home.jpg" alt=""><figcaption>Home page, desktop, 2 October 2026</figcaption></figure>
+  </div>
+</section>
+
+<!-- 4 Mobile -->
+<section class="slide" data-stage="Pain point: mobile" data-notes="Most of your readers will open this on a phone. On a phone the first screen shows a logo, a search bar and the word 'home page'. No article, no subscribe button. The ticker says 'news1'. The footer and social bar eat a fifth of the screen on every page.">
+  <div class="prod rev">
+    <div class="phones">
+      <figure class="shot ph"><img src="img/cur-mob-home.jpg" alt=""></figure>
+      <figure class="shot ph"><img src="img/cur-mob-article.jpg" alt=""></figure>
+    </div>
+    <div class="copy">
+      <div class="mono cap">On a phone</div>
+      <h2>The first screen sells nothing.</h2>
+      <ul class="lines">
+        <li class="bad fr"><b>No article, no subscribe button above the fold</b><span>A reader has to scroll past a search bar and a page title.</span></li>
+        <li class="bad fr"><b>A ticker that reads "news1"</b><span>Placeholder content is live on the home page.</span></li>
+        <li class="bad fr"><b>Forty tap targets smaller than a fingertip</b><span>Counted on the home page alone.</span></li>
+        <li class="bad fr"><b>Sticky bars cover the article</b><span>Footer plus social bar on every page, on every scroll.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5 Login and subscription -->
+<section class="slide" data-stage="Pain point: the subscriber journey" data-notes="This is the page where money changes hands. It is a stock login form and a shop listing with postage. There is no account area for a subscriber, no way to read the magazine after paying, and no Google or Facebook sign-in.">
+  <div class="prod">
+    <div class="copy">
+      <div class="mono cap">Login and subscription</div>
+      <h2>Paying is possible. Being a member is not.</h2>
+      <ul class="lines">
+        <li class="bad fr"><b>A username-and-password form</b><span>No Google, no Facebook, no mobile OTP.</span></li>
+        <li class="bad fr"><b>Subscription sold like a product with postage</b><span>Nothing happens after payment: no access, no issue, no reminder.</span></li>
+        <li class="bad fr"><b>No member area</b><span>A subscriber cannot see their plan, renew, or read online.</span></li>
+        <li class="bad fr"><b>Renewals chased by hand</b><span>With 25,000 subscribers, that is a full-time job.</span></li>
+      </ul>
+    </div>
+    <div class="stack">
+      <figure class="shot a"><img src="img/cur-desk-account.jpg" alt=""></figure>
+      <figure class="shot b"><img src="img/cur-desk-subscription.jpg" alt=""></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 6 Leftover pages -->
+<section class="slide" data-stage="Pain point: housekeeping" data-notes="These pages are live and listed in your sitemap, so Google can find them. 'test page', 'demo', 'home 3', 'form test'. They dilute search and look careless to a professional reader.">
+  <div class="prod rev">
+    <figure class="shot"><img src="img/cur-desk-testpage.jpg" alt=""><figcaption>vyaparimitra.com/test-page, live</figcaption></figure>
+    <div class="copy">
+      <div class="mono cap">Housekeeping</div>
+      <h2>Nine test pages are public and indexed.</h2>
+      <ul class="lines">
+        <li class="fr"><b>/test-page, /test-data-page, /form-test</b></li>
+        <li class="fr"><b>/demo, /demo1, /h</b></li>
+        <li class="fr"><b>/home-3, /homenew-old</b><span>Old home pages still live.</span></li>
+        <li class="fr"><b>/job-openings</b><span>A recruitment plugin, installed and empty.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 7 Hand-made pages -->
+<section class="slide s-statement" data-stage="Pain point: architecture" data-notes="This is the finding the audit got right. Every article is designed by hand. That works for ten pages. It breaks at a thousand. The fix is structure: an article is a record with a title, author, category, date and access level, and the website draws it.">
+  <h2>Every article is a hand-built page. <em>That is why nothing scales.</em></h2>
+  <div class="flows">
+    <div class="flow fr"><div class="k">How it works today</div><div class="chain"><span>Create page</span><i>→</i><span>Design page</span><i>→</i><span>Paste content</span><i>→</i><span class="x">Repeat for every article</span></div><p>Each issue means designing pages again. Search, categories and the magazine cannot see what is inside them.</p></div>
+    <div class="flow fr"><div class="k good">How it should work</div><div class="chain"><span>Write content</span><i>→</i><span>Pick type and category</span><i>→</i><span class="g">Publish</span><i>→</i><span class="g">Site lays it out</span></div><p>Articles, judgments, advice, issues and books become structured records. One template each. Thousands of items, one way of working.</p></div>
+  </div>
+</section>
+
+<!-- 8 Scorecard -->
+<section class="slide s-statement" data-stage="The audit, in one view" data-notes="We read the August audit closely. We agree with its diagnosis. These are its scores. Red is what it called critical. We are not here to argue with it; we are here to answer it, and to add the four things you wrote in the margin that it did not cover.">
+  <h2>The August audit scored it <em>five out of ten.</em> We agree.</h2>
+  <div class="score">
+    <div class="r fr"><span>Overall website health</span><div class="bar"><i style="width:50%"></i></div><span class="v">5.0</span></div>
+    <div class="r fr"><span>User experience</span><div class="bar"><i style="width:45%"></i></div><span class="v">4.5</span></div>
+    <div class="r crit fr"><span>Mobile experience</span><div class="bar"><i style="width:35%"></i></div><span class="v">3.5</span></div>
+    <div class="r fr"><span>Navigation</span><div class="bar"><i style="width:50%"></i></div><span class="v">5.0</span></div>
+    <div class="r crit fr"><span>Content architecture</span><div class="bar"><i style="width:40%"></i></div><span class="v">4.0</span></div>
+    <div class="r fr"><span>SEO readiness</span><div class="bar"><i style="width:50%"></i></div><span class="v">5.0</span></div>
+    <div class="r fr"><span>Technical architecture</span><div class="bar"><i style="width:45%"></i></div><span class="v">4.5</span></div>
+    <div class="r fr"><span>WordPress maintenance</span><div class="bar"><i style="width:40%"></i></div><span class="v">4.0</span></div>
+    <div class="r fr"><span>Accessibility</span><div class="bar"><i style="width:40%"></i></div><span class="v">4.0</span></div>
+    <div class="r fr"><span>Performance</span><div class="bar"><i style="width:50%"></i></div><span class="v">5.0</span></div>
+    <div class="r fr"><span>Security and maintenance</span><div class="bar"><i style="width:45%"></i></div><span class="v">4.5</span></div>
+    <div class="r crit fr"><span>Customer and login flow</span><div class="bar"><i style="width:40%"></i></div><span class="v">4.0</span></div>
+    <div class="r crit fr"><span>Scalability</span><div class="bar"><i style="width:40%"></i></div><span class="v">4.0</span></div>
+  </div>
+</section>
+
+<!-- 9 The shift -->
+<section class="slide s-statement" data-stage="The shift" data-notes="Here is the reframe. The website is not the product. The subscriber relationship is. Every feature that follows serves one step of this loop, and the loop feeds itself.">
+  <h2>Not a website. <em>A subscriber engine.</em></h2>
+  <div class="loop">
+    <div class="n fr"><h3>Discover</h3><p>A reader finds an article on Google or WhatsApp.</p></div>
+    <div class="n fr"><h3>Register</h3><p>Name, mobile, email. One tap with Google.</p></div>
+    <div class="n fr"><h3>Read</h3><p>Free articles, then a clear line where membership starts.</p></div>
+    <div class="n fr"><h3>Subscribe</h3><p>Pick a plan, pay by UPI or card.</p></div>
+    <div class="n fr"><h3>Activate</h3><p>Access opens the same minute. Receipt on WhatsApp.</p></div>
+    <div class="n fr"><h3>Remind</h3><p>New issue, expiry, renewal: automatic.</p></div>
+    <div class="n fr"><h3>Renew</h3><p>One tap, no form, no phone call.</p></div>
+  </div>
+  <div class="loopback fr">and every reader who registers becomes a lead you can talk to.</div>
+</section>
+
+<!-- 10 Visitor gate + dashboard -->
+<section class="slide" data-stage="Your four asks: the gate and the numbers" data-notes="Your first three notes, built. A visitor reads one article free, then the gate asks for name, mobile and email, or one tap with Google. From then on you have a dashboard: today, since launch, collections by month, and which topics hold attention longest. This is the part nobody else offered you.">
+  <div class="prod">
+    <div class="copy">
+      <div class="mono cap">Visitor gate and owner dashboard</div>
+      <h2>Who came, what they read, what they paid.</h2>
+      <ul class="lines">
+        <li class="fr"><b>Soft gate after the first article</b><span>Name, mobile, email, or Google in one tap. Thank you, and in.</span></li>
+        <li class="fr"><b>Visitors today and since launch</b><span>Live, on your phone, no spreadsheets.</span></li>
+        <li class="fr"><b>Collections, month by month</b><span>Subscriptions, single issues, books, ad bookings.</span></li>
+        <li class="fr"><b>Time on topic</b><span>GST or income tax: which section keeps readers longest.</span></li>
+      </ul>
+    </div>
+    <div class="mock">
+      <div class="bar"><i></i><i></i><i></i><span class="mono" style="margin-left:auto;font-size:10px">Illustrative numbers</span></div>
+      <div class="dash">
+        <div class="tile"><div class="k">Visitors today</div><b>1,284</b><small>+12% vs last Thursday</small><div class="sp"><i style="height:40%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:70%"></i><i style="height:62%"></i><i style="height:88%"></i><i style="height:100%"></i></div></div>
+        <div class="tile"><div class="k">Visitors since launch</div><b>2,41,560</b><small>38,210 registered</small><div class="sp"><i style="height:20%"></i><i style="height:32%"></i><i style="height:45%"></i><i style="height:58%"></i><i style="height:66%"></i><i style="height:80%"></i><i style="height:100%"></i></div></div>
+        <div class="tile"><div class="k">Collections, September</div><b>₹ 6,42,300</b><small>412 renewals, 96 new</small><div class="sp"><i style="height:50%"></i><i style="height:44%"></i><i style="height:62%"></i><i style="height:58%"></i><i style="height:75%"></i><i style="height:90%"></i><i style="height:100%"></i></div></div>
+        <div class="topics"><div class="k">Time on topic, this week</div>
+          <div class="t"><span>GST</span><div class="b"><i style="width:92%"></i></div><em>6m 40s</em></div>
+          <div class="t"><span>Income tax</span><div class="b"><i style="width:74%"></i></div><em>5m 10s</em></div>
+          <div class="t"><span>Judgments</span><div class="b"><i style="width:58%"></i></div><em>4m 05s</em></div>
+          <div class="t"><span>Investment</span><div class="b"><i style="width:30%"></i></div><em>2m 10s</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 WhatsApp triggers -->
+<section class="slide s-statement" data-stage="Leads to WhatsApp" data-notes="Once a reader has given a mobile number, the site can talk to them on WhatsApp without anyone in your office typing. Each line here is a trigger on the site and the message it sends. Gold is the system, blue is the reader.">
+  <h2>Every lead gets a WhatsApp conversation, <em>automatically.</em></h2>
+  <div class="thread">
+    <div class="msg fr"><i></i><div><b>Gate submitted</b><p>Welcome message in Marathi, with this month's free article and a link to the current issue.</p></div><span>within 1 minute</span></div>
+    <div class="msg fr"><i></i><div><b>Read three articles, not subscribed</b><p>A short note from the editor with a first-year offer code.</p></div><span>day 3</span></div>
+    <div class="msg fr"><i></i><div><b>Payment received</b><p>Receipt, login link, and "your issue is ready to read".</p></div><span>instant</span></div>
+    <div class="msg fr"><i></i><div><b>New issue published</b><p>Cover image, three headlines, "read now" button, to every active subscriber.</p></div><span>monthly</span></div>
+    <div class="msg fr"><i></i><div><b>Subscription expiring</b><p>Reminder at 30, 7 and 1 day, each with a one-tap renew link.</p></div><span>automatic</span></div>
+    <div class="msg h fr"><i></i><div><b>Reader replies with a question</b><p>The assistant answers from the archive, or hands over to your team with the full context.</p></div><span>any time</span></div>
+  </div>
+</section>
+
+<!-- 12 Chatbot -->
+<section class="slide" data-stage="The assistant" data-notes="The same assistant lives on the website and on WhatsApp. It is trained on seventy-six years of your own archive, answers in Marathi, cites the article, and nudges towards the subscription when the answer sits behind the paywall. It never invents tax advice; when it is unsure it offers the 'ask the expert' column.">
+  <div class="prod">
+    <div class="copy">
+      <div class="mono cap">Website and WhatsApp assistant</div>
+      <h2>Answers in Marathi, from your own archive.</h2>
+      <ul class="lines">
+        <li class="fr"><b>Trained only on Vyapari Mitra content</b><span>Articles, judgments, advice columns. It cites the source every time.</span></li>
+        <li class="fr"><b>Knows who it is talking to</b><span>Subscriber or visitor, expiry date, what they read last.</span></li>
+        <li class="fr"><b>Sells politely</b><span>If the full answer is members-only, it says so and offers the plan.</span></li>
+        <li class="fr"><b>Hands over when it should</b><span>Legal questions beyond the archive go to your team with the chat attached.</span></li>
+      </ul>
+    </div>
+    <div class="chat">
+      <div class="hd"><i></i><div><b>व्यापारी मित्र सहाय्यक</b><small>online · replies in Marathi</small></div></div>
+      <div class="bub u">कंपोझिशन स्कीमची मर्यादा किती आहे?<small>10:42</small></div>
+      <div class="bub">वस्तू व्यापाऱ्यांसाठी वार्षिक उलाढाल मर्यादा ₹1.5 कोटी आहे (ईशान्येकडील राज्यांत ₹75 लाख). सेवांसाठी ₹50 लाख. सविस्तर: <a>जीएसटी लेख, ऑगस्ट २०२६</a><small>10:42</small></div>
+      <div class="bub u">माझी वर्गणी कधी संपते?<small>10:43</small></div>
+      <div class="bub">तुमची छापील + डिजिटल वर्गणी ३१ डिसेंबर २०२६ रोजी संपते. आजच नूतनीकरण केल्यास पुढचा अंक चुकणार नाही. <a>एका टॅपमध्ये नूतनीकरण</a><small>10:43</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 Offers -->
+<section class="slide s-statement" data-stage="Offers" data-notes="You asked whether we can offer discounts to these visitors. Yes, and the point is that every offer is targeted, timed and trackable. Codes are created by you in the admin; the system decides who sees which one and reports what each one earned.">
+  <h2>Offers that know <em>who they are talking to.</em></h2>
+  <div class="offers">
+    <div class="offer fr"><div class="w">New visitor</div><h3>First-year welcome</h3><p>A code shown once at the gate, valid for seven days. Creates urgency without a sale banner on the home page.</p></div>
+    <div class="offer fr"><div class="w">Lapsed subscriber</div><h3>Come-back price</h3><p>For anyone whose subscription ended in the last two years. Sent on WhatsApp, not advertised publicly.</p></div>
+    <div class="offer fr"><div class="w">Professional</div><h3>Chamber and firm plans</h3><p>Five or more seats for CA firms, tax consultants and chambers, with one GST invoice.</p></div>
+    <div class="offer fr"><div class="w">Renewal</div><h3>Early-bird renewal</h3><p>Renew thirty days before expiry and keep last year's price. Most renewals should land here.</p></div>
+  </div>
+</section>
+
+<!-- 14 Sign in -->
+<section class="slide" data-stage="Registration and login" data-notes="You asked for Google and Facebook sign-in, and for newsletter sign-up. Here is the whole registration in one screen. Google and Facebook for people who have them; mobile OTP for everyone else, because many of your readers do not use email daily. The newsletter is a single pre-ticked consent line.">
+  <div class="prod rev">
+    <div class="mock" style="max-width:420px;justify-self:center;width:100%">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="gate">
+        <div class="k">व्यापारी मित्र वाचण्यासाठी नोंदणी करा</div>
+        <p>एक मिनिट, एकदाच. त्यानंतर मोफत लेख आणि साप्ताहिक पत्र.</p>
+        <div class="soc"><span>Google ने सुरू करा</span><span>Facebook ने सुरू करा</span></div>
+        <div class="or">किंवा</div>
+        <div class="f">तुमचे नाव</div>
+        <div class="f">मोबाईल नंबर (OTP येईल)</div>
+        <div class="f">ईमेल</div>
+        <div class="go">पुढे जा</div>
+        <label><i></i>दर आठवड्याला कर आणि कायद्याचे सारांश WhatsApp / ईमेलवर पाठवा</label>
+      </div>
+    </div>
+    <div class="copy">
+      <div class="mono cap">Registration and login</div>
+      <h2>One screen. Three ways in. Never a lost password.</h2>
+      <ul class="lines">
+        <li class="fr"><b>Google and Facebook, one tap</b><span>No password to remember. Name and email arrive verified.</span></li>
+        <li class="fr"><b>Mobile OTP for everyone else</b><span>Many readers live on WhatsApp, not email. The number is the identity.</span></li>
+        <li class="fr"><b>Newsletter consent built in</b><span>A weekly summary by email and WhatsApp; opt out any time.</span></li>
+        <li class="fr"><b>Same login on the website and the magazine reader</b><span>One account, every device.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 15 Magazine access -->
+<section class="slide s-statement" data-stage="The digital magazine" data-notes="Your rule from the audit: view-only for the first three months, then download. We build that into the membership itself, not as a PDF trick. The reader opens the issue in the browser; copies and downloads are blocked until the subscription rules unlock them.">
+  <h2>The magazine, on screen, <em>by your rules.</em></h2>
+  <div class="rule3">
+    <div class="fr"><div class="k">Months 1 to 3</div><h3>Read online only</h3><p>Page-by-page reader on phone and desktop. No download, no print, watermarked with the subscriber's name.</p></div>
+    <div class="fr"><div class="k">After the defined period</div><h3>Download unlocks</h3><p>The PDF appears in the member area automatically. No request, no email to your office.</p></div>
+    <div class="fr"><div class="k">Always</div><h3>The archive</h3><p>Previous issues, searchable by month, topic and author. The 1950 to 2026 collection becomes a reason to subscribe.</p></div>
+  </div>
+</section>
+
+<!-- 16 CMS -->
+<section class="slide" data-stage="You run it" data-notes="Your fourth ask. This is the entire publishing screen. Your team writes, picks the type and category, sets whether it is free or members-only, and publishes. The site does the layout. Issues and books use the same screen. We train the team in one afternoon.">
+  <div class="prod">
+    <div class="copy">
+      <div class="mono cap">Content management</div>
+      <h2>Publish an article in two minutes, without a developer.</h2>
+      <ul class="lines">
+        <li class="fr"><b>One screen for everything</b><span>Articles, judgments, advice columns, issues, books, announcements.</span></li>
+        <li class="fr"><b>Marathi, Hindi and English fields side by side</b><span>Translate when you are ready; the site shows what exists.</span></li>
+        <li class="fr"><b>Free or members-only, per item</b><span>A switch, not a separate page.</span></li>
+        <li class="fr"><b>Scheduled publishing</b><span>Load the issue on Sunday, it goes live on the first.</span></li>
+      </ul>
+    </div>
+    <div class="mock">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="cms">
+        <div class="f w"><small>शीर्षक (Title)</small>रद्द केलेली नोंदणी पुनर्जीवित करता येते का?</div>
+        <div class="f"><small>Type</small>न्याय निर्णय</div>
+        <div class="f"><small>Category</small>जीएसटी</div>
+        <div class="f"><small>Author</small>अॅड. पी. एम. कुलकर्णी</div>
+        <div class="f"><small>Access</small>Members only</div>
+        <div class="f w area"><small>Content</small>सर्वोच्च न्यायालयाने कलम २९ आणि ३० अंतर्गत...</div>
+        <div class="f"><small>Issue</small>ऑक्टोबर २०२६</div>
+        <div class="f"><small>Publish on</small>1 Oct 2026, 06:00</div>
+        <div class="pub">Publish</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 Three directions intro -->
+<section class="slide s-statement" data-stage="Three design directions" data-notes="Now the look. We built three deliberately different directions, each designed for a Marathi reader in Maharashtra, each with proper Devanagari type rather than a Latin font bent into Marathi. These are mood boards, not the final site. Pick the one that feels like Vyapari Mitra, and we design from there.">
+  <h2>Three directions. <em>One is you.</em></h2>
+  <p class="lede">Designed for a Marathi reader first. Real Devanagari typefaces, your logo, your August cover. Each one is a different answer to "what is Vyapari Mitra online?"</p>
+  <div class="dirs3">
+    <div class="fr"><figure class="shot"><img src="img/mood-a-desk.jpg" alt=""></figure><h3>A. Vartapatra</h3><p>The heritage broadsheet. Trust, authority, seventy-six years.</p></div>
+    <div class="fr"><figure class="shot"><img src="img/mood-b-desk.jpg" alt=""></figure><h3>B. Saathi</h3><p>The daily companion. Tools, dates, answers, a friend in your pocket.</p></div>
+    <div class="fr"><figure class="shot"><img src="img/mood-c-desk.jpg" alt=""></figure><h3>C. Nyaya</h3><p>The reference library. For the professional who pays for precision.</p></div>
+  </div>
+</section>
+
+<!-- 18 Direction A -->
+<section class="slide" data-stage="Direction A: Vartapatra" data-notes="Direction A treats the site like the paper your readers already trust. Cream paper, a kumkum-red masthead in a true Marathi serif, the editorial as the lead story, the current issue on the right like a newsstand. It says: we have been here since 1950 and we are not going anywhere.">
+  <div class="dir">
+    <div class="copy">
+      <div class="mono cap">Direction A</div>
+      <h2>Vartapatra. <em>The paper you trust, now on your phone.</em></h2>
+      <p class="lede">Heritage and authority. Reads like a well-set Marathi broadsheet: editorial leads, the issue sits at the newsstand, judgments below the fold.</p>
+      <div class="sw"><i style="background:#F4ECDC"></i><i style="background:#B3261E"></i><i style="background:#1B1A17"></i><i style="background:#9A7A1E"></i></div>
+      <div class="type"><b>Tiro Devanagari Marathi</b> for headlines, <b>Mukta</b> for reading</div>
+      <ul class="lines">
+        <li class="fr"><b>For whom</b><span>The long-time subscriber and the business owner who values the name.</span></li>
+        <li class="fr"><b>What it says</b><span>Seventy-six years of trust, finally readable on a phone.</span></li>
+      </ul>
+    </div>
+    <div class="combo">
+      <figure class="shot d"><img src="img/mood-a-desk.jpg" alt=""></figure>
+      <figure class="shot ph"><img src="img/mood-a-mob-full.jpg" alt=""></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 19 Direction B -->
+<section class="slide" data-stage="Direction B: Saathi" data-notes="Direction B is the opposite bet: not a magazine, a companion. Warm white, saffron, a rounded Marathi face. The hero is a search box and six chips: GST, income tax, TDS. The phone shows the due-date card and the WhatsApp assistant. For the trader who needs an answer today, not an essay.">
+  <div class="dir">
+    <div class="copy">
+      <div class="mono cap">Direction B</div>
+      <h2>Saathi. <em>The friend who knows the tax rules.</em></h2>
+      <p class="lede">Everyday utility. Search first, due dates, calculators and the assistant up front. The magazine is the reward for coming back.</p>
+      <div class="sw"><i style="background:#FFFBF4"></i><i style="background:#F2691D"></i><i style="background:#14213D"></i><i style="background:#1E8E5A"></i></div>
+      <div class="type"><b>Baloo 2</b> for headlines, <b>Mukta</b> for reading</div>
+      <ul class="lines">
+        <li class="fr"><b>For whom</b><span>Shopkeepers, traders and first-time taxpayers, mostly on a phone.</span></li>
+        <li class="fr"><b>What it says</b><span>Ask anything about tax, in Marathi, right now.</span></li>
+      </ul>
+    </div>
+    <div class="combo">
+      <figure class="shot d"><img src="img/mood-b-desk.jpg" alt=""></figure>
+      <figure class="shot ph"><img src="img/mood-b-mob-full.jpg" alt=""></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 20 Direction C -->
+<section class="slide" data-stage="Direction C: Nyaya" data-notes="Direction C goes premium and professional. Deep green, gold, a high-contrast Devanagari display face. The hero is a judgments search with facets: court, act, year. The archive from 1950 is a feature. This is for the CA and the advocate who will pay the higher plan for precision and will recommend it to clients.">
+  <div class="dir">
+    <div class="copy">
+      <div class="mono cap">Direction C</div>
+      <h2>Nyaya. <em>The reference library for professionals.</em></h2>
+      <p class="lede">Precision and prestige. Judgments search with facets, the 1950 to 2026 archive as a timeline, and a membership card that reads like a credential.</p>
+      <div class="sw"><i style="background:#0F1F1A"></i><i style="background:#D4A72C"></i><i style="background:#EFE6D2"></i><i style="background:#1B372E"></i></div>
+      <div class="type"><b>Rozha One</b> for headlines, <b>Martel</b> for reading</div>
+      <ul class="lines">
+        <li class="fr"><b>For whom</b><span>Chartered accountants, advocates, tax consultants and their firms.</span></li>
+        <li class="fr"><b>What it says</b><span>The most complete Marathi tax reference there is.</span></li>
+      </ul>
+    </div>
+    <div class="combo">
+      <figure class="shot d"><img src="img/mood-c-desk.jpg" alt=""></figure>
+      <figure class="shot ph"><img src="img/mood-c-mob-full.jpg" alt=""></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 21 Languages and search -->
+<section class="slide s-statement" data-stage="Three languages, one search" data-notes="Marathi today, Hindi and English when you are ready. This is decided at the foundation, not bolted on later: every article has three language slots, every URL carries its language, and search understands GST, जीएसटी and जीएसटी typed in Latin letters as the same word.">
+  <h2>Marathi today. <em>Hindi and English</em> without rebuilding.</h2>
+  <div class="three">
+    <div class="b fr"><div class="n">1</div><div><h3>Built in from day one</h3><p>Every article, issue and menu has three language slots. Publish Marathi now, add the others when the editorial team is ready.</p></div></div>
+    <div class="b fr"><div class="n">2</div><div><h3>Search that understands your readers</h3><p>GST, जीएसटी, "jeeesti", TDS, कर, 2026: one search box, partial words, categories, dates, authors and specific judgments.</p></div></div>
+    <div class="b fr"><div class="n">3</div><div><h3>Fast on a cheap phone</h3><p>No page builder, no plugin pile. Each page loads in under two seconds on a 4G connection, measured on real devices.</p></div></div>
+  </div>
+</section>
+
+<!-- 22 How we work -->
+<section class="slide s-statement" data-stage="How we work" data-notes="Six steps, weeks not months. You pick a direction this week. We design on real content, build in the open with a weekly walkthrough, move every existing article and subscriber across, launch on the same domain, and then keep running it with you.">
+  <h2>Pick a direction. <em>Weeks, not months.</em></h2>
+  <div class="steps">
+    <div class="step fr"><div class="n">1</div><h3>Choose</h3><p>You pick A, B or C, or a mix. We lock the look in one working session.</p></div>
+    <div class="step fr"><div class="n">2</div><h3>Design</h3><p>Home, article, issue, account and gate, designed on your real content.</p></div>
+    <div class="step fr"><div class="n">3</div><h3>Build</h3><p>Structured content, membership, payments, WhatsApp, dashboard. Weekly walkthrough.</p></div>
+    <div class="step fr"><div class="n">4</div><h3>Move</h3><p>Every article, issue and subscriber migrated. Old links keep working.</p></div>
+    <div class="step fr"><div class="n">5</div><h3>Launch</h3><p>Same domain, same morning. Your team trained the day before.</p></div>
+    <div class="step fr"><div class="n">6</div><h3>Run</h3><p>Updates, backups, security, reminders and a monthly report, handled by us.</p></div>
+  </div>
+</section>
+
+<!-- 23 Close -->
+<section class="slide close" data-stage="" data-notes="One decision today: which direction feels like Vyapari Mitra. Everything else follows from that. Thank you.">
+  <div class="mono cap">Next step</div>
+  <h1>Which direction <em>feels like you?</em></h1>
+  <p class="lede">Tell us A, B or C. We come back with the detailed scope, the plan and the commercials for that direction.</p>
+  <div class="contact">
+    <div><span class="mono">Jarvis Daily</span>Tranquil Veda Private Limited, Pune</div>
+    <div><span class="mono">Shruti</span>shruti@jarvisdaily.com</div>
+    <div><span class="mono">WhatsApp</span>+91 96737 58777</div>
+  </div>
+</section>
+
+</main>
+
+<div class="progress"><i id="bar"></i></div>
+<div class="counter mono" id="counter"></div>
+<div class="hint mono" id="hint"><kbd>→</kbd> next <kbd>←</kbd> back <kbd>N</kbd> notes <kbd>F</kbd> full screen</div>
+<div class="notes" id="notes" hidden></div>
+
+<script>
+(function(){
+var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+var bar = document.getElementById('bar'), counter = document.getElementById('counter'), stage = document.getElementById('stage'), hint = document.getElementById('hint'), notes = document.getElementById('notes');
+var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var cur = -1, fragIdx = 0;
+function frags(i){ return Array.prototype.slice.call(slides[i].querySelectorAll('.fr')); }
+function showFrags(i, n){ frags(i).forEach(function(f, k){ f.classList.toggle('on', k < n); }); }
+function preload(i){ for (var k = i + 1; k <= i + 2 && k < slides.length; k++) slides[k].querySelectorAll('img[data-src]').forEach(function(im){ im.src = im.getAttribute('data-src'); im.removeAttribute('data-src'); }); }
+function go(i, dir, allFrags){
+  if (i < 0 || i >= slides.length || i === cur) return;
+  if (cur >= 0){ var o = slides[cur]; o.classList.remove('is-active'); o.classList.toggle('back', dir < 0); }
+  cur = i; var s = slides[i]; s.classList.remove('back'); void s.offsetWidth; s.classList.add('is-active');
+  var fs = frags(i); fragIdx = allFrags ? fs.length : 0; showFrags(i, fragIdx);
+  bar.style.width = (i / (slides.length - 1) * 100) + '%';
+  counter.textContent = (i + 1) + ' / ' + slides.length;
+  stage.textContent = s.getAttribute('data-stage') || '';
+  hint.style.opacity = i === 0 ? 1 : 0;
+  if (!notes.hidden) renderNotes();
+  if (history.replaceState) history.replaceState(null, '', '#' + (i + 1));
+  preload(i);
+}
+function next(){ var fs = frags(cur); if (fragIdx < fs.length){ fragIdx++; showFrags(cur, fragIdx); return; } go(cur + 1, 1, false); }
+function prev(){ if (fragIdx > 0){ fragIdx--; showFrags(cur, fragIdx); return; } go(cur - 1, -1, true); }
+function renderNotes(){ notes.innerHTML = '<b>' + (cur + 1) + '</b>' + (slides[cur].getAttribute('data-notes') || ''); }
+document.addEventListener('keydown', function(e){
+  if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName) && e.key !== 'Escape') return;
+  switch (e.key){
+    case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown': case 'Enter': e.preventDefault(); next(); break;
+    case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': e.preventDefault(); prev(); break;
+    case 'Home': go(0, -1, false); break;
+    case 'End': go(slides.length - 1, 1, true); break;
+    case 'n': case 'N': notes.hidden = !notes.hidden; if (!notes.hidden) renderNotes(); break;
+    case 'f': case 'F': if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); break;
+    case 'Escape': notes.hidden = true; break;
+  }
+});
+document.getElementById('deck').addEventListener('click', function(e){ if (e.target.closest('[data-noadvance], input, button, a')) return; if (e.clientX / window.innerWidth < 0.2) prev(); else next(); });
+var tx = null, ty = null;
+document.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+document.addEventListener('touchend', function(e){ if (tx === null) return; var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4){ if (dx < 0) next(); else prev(); } tx = ty = null; }, {passive:true});
+window.__go = function(n){ go(n, 1, true); };
+var h = parseInt((location.hash || '').replace('#', ''), 10);
+go(isNaN(h) ? 0 : Math.max(0, Math.min(slides.length - 1, h - 1)), 1, false);
+if (!isNaN(h)) { showFrags(cur, frags(cur).length); fragIdx = frags(cur).length; }
+})();
+</script>
+</body>
+</html>

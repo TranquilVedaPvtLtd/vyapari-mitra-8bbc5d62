@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="mr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Direction C: Nyaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Martel:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0F1F1A;--bg2:#142A23;--bg3:#1B372E;--parch:#EFE6D2;--parch2:#C9BFA6;--muted:#8E9A8C;--gold:#D4A72C;--gold2:#8C6D14;--line:rgba(239,230,210,.14)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Martel',serif;background:var(--bg);color:var(--parch);line-height:1.6;-webkit-font-smoothing:antialiased}
+.d{font-family:'Rozha One',serif;font-weight:400;line-height:1.1}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+a{color:inherit;text-decoration:none}
+.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:14px}
+.brand b{font-family:'Rozha One',serif;font-weight:400;font-size:30px;color:var(--gold);white-space:nowrap}
+.brand span{font-size:12px;letter-spacing:.18em;color:var(--muted)}
+.menu{display:flex;gap:28px;font-size:14px;color:var(--parch2)}
+.cta{border:1px solid var(--gold);color:var(--gold);padding:9px 18px;font-size:13px;letter-spacing:.08em}
+/* hero */
+.hero{position:relative;padding:70px 0 60px;border-bottom:1px solid var(--line);overflow:hidden}
+.hero::before{content:"";position:absolute;right:-10%;top:-30%;width:60%;height:160%;background:radial-gradient(closest-side,rgba(212,167,44,.14),transparent 70%);pointer-events:none}
+.hero .k{font-size:12px;letter-spacing:.2em;color:var(--gold)}
+.hero h1{font-size:clamp(40px,5.6vw,80px);max-width:16ch;margin:12px 0 18px;color:var(--parch)}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p{font-size:18px;color:var(--parch2);max-width:54ch;font-weight:300}
+.search{margin-top:30px;max-width:760px;display:grid;grid-template-columns:1fr auto;border:1px solid var(--gold);background:rgba(239,230,210,.04)}
+.search span{padding:18px 20px;color:var(--muted);font-size:16px}
+.search b{background:var(--gold);color:var(--bg);padding:18px 26px;font-weight:600;font-family:'Martel',serif}
+.facets{display:flex;gap:22px;margin-top:14px;font-size:13px;color:var(--muted)}
+.facets i{font-style:normal;color:var(--parch2);border-bottom:1px solid var(--gold2);padding-bottom:2px}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.stats div{padding:26px 22px;border-right:1px solid var(--line)}
+.stats div:last-child{border-right:0}
+.stats b{display:block;font-family:'Rozha One',serif;font-weight:400;font-size:40px;color:var(--gold);line-height:1}
+.stats span{font-size:14px;color:var(--parch2)}
+/* library */
+.lib{display:grid;grid-template-columns:.9fr 1.1fr;gap:50px;padding:54px 0;border-bottom:1px solid var(--line)}
+.lib h2{font-size:clamp(30px,3.4vw,48px);max-width:14ch}
+.lib p{color:var(--parch2);margin-top:14px;font-weight:300;max-width:40ch}
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:120px 1fr auto;gap:18px;padding:16px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.row .c{font-size:11.5px;letter-spacing:.14em;color:var(--gold)}
+.row h4{font-family:'Rozha One',serif;font-weight:400;font-size:20px;line-height:1.3;color:var(--parch)}
+.row small{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.row .l{font-size:11.5px;color:var(--muted);letter-spacing:.1em}
+/* archive */
+.arch{padding:54px 0;border-bottom:1px solid var(--line)}
+.arch h2{font-size:clamp(30px,3.4vw,48px)}
+.years{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin-top:26px}
+.yr{border:1px solid var(--line);padding:14px 12px;background:var(--bg2)}
+.yr b{display:block;font-family:'Rozha One',serif;font-weight:400;font-size:22px;color:var(--parch)}
+.yr span{font-size:12px;color:var(--muted)}
+.yr.now{border-color:var(--gold);background:var(--bg3)}
+.yr.now b{color:var(--gold)}
+.covers{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:18px}
+.covers div{aspect-ratio:3/4;background:var(--bg3);border:1px solid var(--line)}
+.covers div.r{background:url(../img/cover-aug26.jpg) center/cover}
+/* member */
+.mem{display:grid;grid-template-columns:1.1fr .9fr;gap:50px;padding:54px 0 40px;align-items:center}
+.mem h2{font-size:clamp(30px,3.4vw,48px)}
+.mem p{color:var(--parch2);margin-top:14px;font-weight:300;max-width:44ch}
+.card{border:1px solid var(--gold2);padding:28px;background:linear-gradient(160deg,var(--bg3),var(--bg2))}
+.card .k{font-size:11.5px;letter-spacing:.2em;color:var(--gold)}
+.card b{display:block;font-family:'Rozha One',serif;font-weight:400;font-size:38px;margin:8px 0 4px;color:var(--parch)}
+.card small{color:var(--muted);font-size:13px}
+.card ul{list-style:none;margin:18px 0 20px;border-top:1px solid var(--line)}
+.card li{padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--parch2)}
+.card a{display:block;text-align:center;background:var(--gold);color:var(--bg);padding:14px;font-weight:600}
+.foot{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);padding:20px 0 30px;border-top:1px solid var(--line)}
+@media(max-width:860px){
+  .wrap{padding:0 16px}
+  .menu{display:none}
+  .brand b{font-size:22px}
+  .brand span{display:none}
+  .hero{padding:40px 0 36px}
+  .search{grid-template-columns:1fr}
+  .search b{text-align:center}
+  .stats{grid-template-columns:1fr 1fr}
+  .stats div:nth-child(2n){border-right:0}
+  .stats div{border-bottom:1px solid var(--line)}
+  .lib,.mem{grid-template-columns:1fr;gap:26px;padding:36px 0}
+  .row{grid-template-columns:1fr;gap:4px}
+  .years{grid-template-columns:repeat(4,1fr)}
+  .covers{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><b>व्यापारी मित्र</b><span>EST. 1950 · PUNE</span></div>
+    <div class="menu"><a>न्यायनिर्णय</a><a>आयकर</a><a>जीएसटी</a><a>संग्रह</a><a>अंक</a></div>
+    <a class="cta">सदस्य लॉगिन</a>
+  </div>
+
+  <section class="hero">
+    <div class="k">न्यायनिर्णय · लेख · सल्ला · १९५० पासून</div>
+    <h1 class="d">सर्वोच्च आणि उच्च न्यायालयांचे कर निर्णय, <em>मराठीत.</em></h1>
+    <p>सनदी लेखापाल, वकील आणि कर सल्लागारांसाठी एक संदर्भ ग्रंथालय. प्रत्येक निर्णयाचा सारांश, मूळ आदेशाची लिंक, आणि तो तुमच्या अशिलाला कसा लागू होतो.</p>
+    <div class="search"><span>शोधा: कलम, न्यायालय, वर्ष, किंवा विषय</span><b>शोधा</b></div>
+    <div class="facets"><span>न्यायालय: <i>सर्वोच्च</i></span><span>कायदा: <i>GST</i></span><span>वर्ष: <i>२०२६</i></span><span>भाषा: <i>मराठी</i></span></div>
+  </section>
+
+  <section class="stats">
+    <div><b>७७</b><span>वर्षे अखंड प्रकाशन</span></div>
+    <div><b>२५,०००+</b><span>वर्गणीदार, महाराष्ट्र, गोवा, कर्नाटक</span></div>
+    <div><b>९००+</b><span>अंकांचा डिजिटल संग्रह</span></div>
+    <div><b>३</b><span>भाषा: मराठी, हिंदी, English</span></div>
+  </section>
+
+  <section class="lib">
+    <div><h2 class="d">या आठवड्याचे महत्त्वाचे निर्णय</h2><p>प्रत्येक निर्णय तीन भागांत: काय घडले, न्यायालयाने काय ठरवले, आणि व्यवहारात याचा अर्थ काय.</p></div>
+    <div class="rows">
+      <div class="row"><div class="c">सर्वोच्च न्यायालय</div><div><h4>रद्द केलेली जीएसटी नोंदणी पुनर्जीवित करण्याचा अधिकार</h4><small>कलम २९ व ३०, निर्णय दि. १८ सप्टेंबर २०२६</small></div><div class="l">सदस्य</div></div>
+      <div class="row"><div class="c">मुंबई उच्च न्यायालय</div><div><h4>सुनावणीची संधी न देता दिलेला आदेश रद्द</h4><small>नैसर्गिक न्याय, कलम ७५(४)</small></div><div class="l">सदस्य</div></div>
+      <div class="row"><div class="c">आयकर अपील न्यायाधिकरण</div><div><h4>रोख ठेवींवरील कलम ६८ ची नोंद: पुराव्याचे ओझे कोणावर?</h4><small>पुणे खंडपीठ, ऑगस्ट २०२६</small></div><div class="l">मोफत</div></div>
+      <div class="row"><div class="c">कायद्याचा सल्ला</div><div><h4>करदात्याला आपली बाजू मांडण्याचा हक्क: वाचकाचा प्रश्न</h4><small>उत्तर: अॅड. पी. एम. कुलकर्णी</small></div><div class="l">मोफत</div></div>
+    </div>
+  </section>
+
+  <section class="arch">
+    <h2 class="d">१९५० पासूनचा संपूर्ण संग्रह, शोधण्यायोग्य</h2>
+    <div class="years">
+      <div class="yr"><b>१९५०</b><span>पहिला अंक</span></div><div class="yr"><b>१९६२</b><span></span></div><div class="yr"><b>१९७५</b><span></span></div><div class="yr"><b>१९९१</b><span>उदारीकरण</span></div><div class="yr"><b>२००५</b><span></span></div><div class="yr"><b>२०१७</b><span>जीएसटी</span></div><div class="yr"><b>२०२५</b><span>७५ वर्षे</span></div><div class="yr now"><b>२०२६</b><span>डिजिटल</span></div>
+    </div>
+    <div class="covers"><div class="r"></div><div></div><div></div><div></div><div></div><div></div></div>
+  </section>
+
+  <section class="mem">
+    <div><h2 class="d">सदस्यत्व म्हणजे संदर्भ ग्रंथालयाची चावी.</h2><p>पहिले तीन महिने अंक ऑनलाइन वाचा; त्यानंतर डाउनलोड. प्रत्येक नवीन अंक आणि महत्त्वाचा निर्णय WhatsApp वर.</p></div>
+    <div class="card"><div class="k">व्यावसायिक सदस्यत्व</div><b>₹ २,९०० / वर्ष</b><small>छापील अंक + संपूर्ण डिजिटल संग्रह</small>
+      <ul><li>१२ अंक, घरपोच आणि ऑनलाइन</li><li>न्यायनिर्णय शोध, कलमानुसार</li><li>WhatsApp वर निर्णयांची सूचना</li><li>GST इनव्हॉइस, इनपुट क्रेडिटसाठी</li></ul>
+      <a>सदस्य व्हा</a></div>
+  </section>
+  <div class="foot"><span>व्यापारी मित्र पब्लिकेशन्स प्रा. लि., पुणे</span><span>मराठी · हिंदी · English</span></div>
+</div>
+</body>
+</html>
